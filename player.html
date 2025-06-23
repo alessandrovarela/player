@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audio Player</title>
+  <!-- Plyr CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.plyr.io/3.7.8/plyr.css"
+  />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+    .plyr {
+      --plyr-color-main: #075e54; /* cor verde WhatsApp */
+    }
+  </style>
+</head>
+<body>
+  <!-- O áudio a tocar; o atributo src virá por query string -->
+  <audio id="audio" controls></audio>
+
+  <!-- Plyr JS -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <script>
+    // Pega o parâmetro ?src=URL_DO_AUDIO.mp3
+    const params = new URLSearchParams(window.location.search);
+    const src = params.get('src');
+    if (src) {
+      const audio = document.getElementById('audio');
+      audio.src = src;
+      // Inicializa o player Plyr
+      new Plyr(audio, {
+        controls: ['play', 'progress', 'current-time', 'mute', 'volume']
+      });
+    } else {
+      document.body.textContent = 'Nenhum áudio fornecido.';
+    }
+  </script>
+</body>
+</html>
