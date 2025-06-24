@@ -39,7 +39,7 @@
     .whatsapp-player .plyr__progress__container {
       flex: 1;
       height: 4px;
-      background: #ccc;
+      background: #ffffff;
       border-radius: 2px;
       overflow: hidden;
     }
@@ -54,6 +54,10 @@
     .whatsapp-player .plyr__control.plyr__control--mute,
     .whatsapp-player .plyr__control.plyr__control--fullscreen {
       display: none;
+    }
+    /* Oculta controle de volume no desktop para manter consistência */
+    .whatsapp-player .plyr__volume {
+      display: none !important;
     }
   </style>
 </head>
