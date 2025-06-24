@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <title>Audio Player</title>
@@ -13,52 +13,161 @@
       margin: 0;
       padding: 0;
       background: transparent;
+      direction: ltr;
     }
-    .plyr {
-      --plyr-color-main: #ffffff; /* cor verde WhatsApp */
-    }
-    /* Estilo do container imitando WhatsApp */
+    
+    /* Container WhatsApp */
     .whatsapp-player {
       background: #ffffff;
-      border-radius: 9999px;
-      padding: 12px 12px;
+      border-radius: 50px;
+      padding: 12px 16px;
       box-sizing: border-box;
       width: 100%;
       max-width: 400px;
     }
+    
+    /* Layout dos controles */
     .whatsapp-player .plyr__controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       padding: 0;
       margin: 0;
     }
-    .whatsapp-player .plyr__control--overlaid {
-      display: none;
+    
+    /* Botão play */
+    .whatsapp-player .plyr__control[data-plyr="play"] {
+      background-color: #25d366 !important;
+      color: white !important;
+      border-radius: 50% !important;
+      width: 36px !important;
+      height: 36px !important;
+      border: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
     }
+    
+    .whatsapp-player .plyr__control[data-plyr="play"]:hover {
+      background-color: #128c7e !important;
+      transform: scale(1.05);
+    }
+    
+    /* Container da barra - SIMPLES */
     .whatsapp-player .plyr__progress__container {
       flex: 1;
       height: 4px;
-      background: #ffffff;
+      background: #ddd;
       border-radius: 2px;
-      overflow: hidden;
+      position: relative;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
     }
-    .whatsapp-player .plyr__progress--played {
-      background: #075e54;
+    
+    /* Remove TODOS os elementos internos do Plyr */
+    .whatsapp-player .plyr__progress__container > *:not(input) {
+      display: none !important;
     }
+    
+    /* Esconde elementos do Plyr que não queremos */
+    .whatsapp-player .plyr__progress__buffer,
+    .whatsapp-player .plyr__tooltip,
+    .whatsapp-player .plyr__progress progress {
+      display: none !important;
+    }
+    
+    /* Barra de progresso verde */
+    .whatsapp-player .plyr__progress__container::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: #25d366;
+      border-radius: inherit;
+      width: var(--progress, 0%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    /* Input range */
+    .whatsapp-player .plyr__progress__container input[type="range"] {
+      position: absolute;
+      top: -6px;
+      left: 0;
+      width: 100%;
+      height: 16px;
+      background: transparent !important;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      z-index: 10;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      outline: none !important;
+    }
+    
+    /* Track invisível - ocupa toda a largura */
+    .whatsapp-player .plyr__progress__container input[type="range"]::-webkit-slider-track {
+      background: transparent !important;
+      height: 4px;
+      border: none !important;
+      width: 100%;
+      border-radius: 2px;
+    }
+    
+    .whatsapp-player .plyr__progress__container input[type="range"]::-moz-range-track {
+      background: transparent !important;
+      height: 4px;
+      border: none !important;
+      width: 100%;
+      border-radius: 2px;
+    }
+    
+    /* Thumb (bolinha) */
+    .whatsapp-player .plyr__progress__container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #25d366;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+      margin: 0;
+    }
+    
+    .whatsapp-player .plyr__progress__container input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #25d366;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+      -moz-appearance: none;
+      margin: 0;
+    }
+    
+    /* Tempo */
     .whatsapp-player .plyr__time {
       font-size: 12px;
-      color: #000;
+      color: #666;
+      font-weight: 500;
+      flex-shrink: 0;
     }
-    /* Oculta controles desnecessários (volume, fullscreen) */
-    .whatsapp-player .plyr__control.plyr__control--mute,
-    .whatsapp-player .plyr__control.plyr__control--fullscreen {
-      display: none;
-    }
-    /* Oculta controle de volume no desktop para manter consistência 
+    
+    /* Esconde controles desnecessários */
+    .whatsapp-player .plyr__control--overlaid,
+    .whatsapp-player .plyr__control--mute,
+    .whatsapp-player .plyr__control--fullscreen,
     .whatsapp-player .plyr__volume {
       display: none !important;
-    }*/
+    }
   </style>
 </head>
 <body>
@@ -74,12 +183,44 @@
     if (src) {
       const audio = document.getElementById('audio');
       audio.src = src;
+      
       // Inicializa o player Plyr
       const playerInstance = new Plyr(audio, {
         controls: ['play', 'progress', 'current-time']
       });
-      // Adiciona classe para estilização estilo WhatsApp
-      audio.closest('.plyr').classList.add('whatsapp-player');
+      
+      // Quando o player estiver pronto
+      playerInstance.on('ready', () => {
+        // Adiciona classe para estilização estilo WhatsApp
+        const plyrContainer = audio.closest('.plyr');
+        if (plyrContainer) {
+          plyrContainer.classList.add('whatsapp-player');
+          
+          // Sincroniza a barra de progresso
+          const progressContainer = plyrContainer.querySelector('.plyr__progress__container');
+          
+          function updateProgress() {
+            if (playerInstance.duration > 0) {
+              let progress = (playerInstance.currentTime / playerInstance.duration) * 100;
+              // Garante que chegue a 100% no final
+              if (progress > 99.5) progress = 100;
+              if (progressContainer) {
+                progressContainer.style.setProperty('--progress', `${progress}%`);
+              }
+            }
+          }
+          
+          playerInstance.on('timeupdate', updateProgress);
+          playerInstance.on('seeking', updateProgress);
+          playerInstance.on('seeked', updateProgress);
+          playerInstance.on('ended', () => {
+            if (progressContainer) {
+              progressContainer.style.setProperty('--progress', '100%');
+            }
+          });
+        }
+      });
+      
     } else {
       document.body.textContent = 'Nenhum áudio fornecido.';
     }
